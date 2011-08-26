@@ -16,12 +16,17 @@ void print_boot_sector() {
   struct fat_preamble * pre;
   struct fat_bios_parameter_block * bp;
 
+  // presentation variables
+  int total_sectors;
+
   fs = fopen(FS_PATH, "r");
   fread(&bs, sizeof(bs), 1, fs);
   fclose(fs);
 
   pre = &bs.preamble;
   bp = &bs.bios_params;
+
+  total_sectors = bp->total_sectors == 0 ? (int)bp->total_sectors_large : (int)bp->total_sectors;
 
   putchar('\n');
   printf("Boot sector size: %d bytes\n", (int)sizeof(bs));
@@ -34,10 +39,8 @@ void print_boot_sector() {
   printf("  Reserved sectors: %d\n", bp->reserved_sector_count);
   printf("  Number of FATs: %d\n", bp->fat_count);
   printf("  Maximum root entries: %d\n", bp->max_root_entries);
-  printf("  Total sectors: %d", bp->total_sectors == 0 ? bp->total_sectors_large : bp->total_sectors);
-  printf("   (small: %d, large: %d)\n", bp->total_sectors, bp->total_sectors_large);
-  printf("  Media descriptor: 0x%02X", bp->media_descriptor);
-  printf("   (fixed disk? %s)\n", bp->media_descriptor == 0xf8 ? "yes" : "no");
+  printf("  Total sectors: %d (small: %d, large: %d)\n", total_sectors, bp->total_sectors, bp->total_sectors_large);
+  printf("  Media descriptor: 0x%02X%s\n", bp->media_descriptor, bp->media_descriptor == 0xf8 ? " (fixed disk)" : "");
   printf("  Sectors per FAT: %d\n", bp->sectors_per_fat);
   printf("  Sectors per track: %d\n", bp->sectors_per_track);
   printf("  Number of heads: %d\n", bp->head_count);
