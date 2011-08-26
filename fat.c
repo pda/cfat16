@@ -1,5 +1,6 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 #include "fat.h"
 
@@ -18,6 +19,7 @@ void print_boot_sector() {
 
   // presentation variables
   int total_sectors;
+  char oem_name[FAT_OEM_NAME_LENGTH + 1];
 
   fs = fopen(FS_PATH, "r");
   fread(&bs, sizeof(bs), 1, fs);
@@ -28,10 +30,13 @@ void print_boot_sector() {
 
   total_sectors = bp->total_sectors == 0 ? (int)bp->total_sectors_large : (int)bp->total_sectors;
 
+  // null terminate string
+  fat_string_copy(oem_name, pre->oem_name, FAT_OEM_NAME_LENGTH);
+
   putchar('\n');
   printf("Boot sector size: %d bytes\n", (int)sizeof(bs));
   printf("Jump instruction: %X %X %X\n", pre->jump_instruction[0], pre->jump_instruction[1], pre->jump_instruction[2]);
-  printf("OEM name: %s\n", pre->oem_name);
+  printf("OEM name: %s\n", oem_name);
 
   printf("\nBIOS parameters:\n");
   printf("  Bytes per sector: %d\n", bp->bytes_per_sector);
@@ -45,4 +50,9 @@ void print_boot_sector() {
   printf("  Sectors per track: %d\n", bp->sectors_per_track);
   printf("  Number of heads: %d\n", bp->head_count);
   printf("  Sectors before partition: %d\n", bp->sectors_before_partition);
+}
+
+void fat_string_copy(char * output, char * input, int length) {
+  memset(output, '\0', length + 1);
+  strncpy(output, input, length);
 }
