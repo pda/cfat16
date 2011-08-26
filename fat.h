@@ -1,12 +1,14 @@
 #include <stdint.h>
 
-// 36 byte boot sector
-
 #pragma pack(push)
 #pragma pack(1)
-struct fat16_boot_sector {
+
+struct fat_preamble {
   unsigned char jump_instruction[3];
   char oem_name[8]; // "mkdosfs\0"
+};
+
+struct fat_bios_parameter_block {
   uint16_t bytes_per_sector; // commonly 512
   uint8_t sectors_per_cluster; // powers of 2, 1 ~ 128
   uint16_t reserved_sector_count; // sectors before first FAT
@@ -20,6 +22,12 @@ struct fat16_boot_sector {
   uint32_t sectors_before_partition; // zero for non-partitined disk.
   uint32_t total_sectors_large; // only used if total_sectors == 0, value > 65535
 };
+
+struct fat16_boot_sector {
+  struct fat_preamble preamble;
+  struct fat_bios_parameter_block bios_params;
+};
+
 #pragma pack(pop)
 
 void print_boot_sector();
