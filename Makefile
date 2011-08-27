@@ -1,10 +1,13 @@
 CC=gcc
 CFLAGS=-Wall -pedantic -pedantic-errors
-OBJECTS=boot.o time.o dir.o utils.o
+OBJECTS=filesystem.o boot.o time.o dir.o utils.o
 BIN=read_fat
 
 $(BIN): $(OBJECTS) $(BIN).c
 	$(CC) $(CFLAGS) $(OBJECTS) $(BIN).c -o $(BIN)
+
+filesystem.o: filesystem.c
+	$(CC) $(CFLAGS) -c filesystem.c
 
 boot.o: boot.c
 	$(CC) $(CFLAGS) -c boot.c

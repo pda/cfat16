@@ -1,7 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "boot.h"
+#include "filesystem.h"
 #include "time.h"
 #include "dir.h"
 #include "utils.h"
@@ -9,19 +9,24 @@
 #define FS_PATH "sample.fat16"
 
 /* header */
-void print_root_directory();
-void print_boot_sector();
+void print_root_directory(struct fat16_filesystem *);
+void print_boot_sector(struct fat16_filesystem *);
 
 /* implementation */
 int main() {
-  print_boot_sector();
-  print_root_directory();
+  struct fat16_filesystem fs;
+  fat_open_filesystem(&fs, FS_PATH);
+
+  print_boot_sector(&fs);
+  print_root_directory(&fs);
   putchar('\n');
+
+  fat_close_filesystem(&fs);
+
   return EXIT_SUCCESS;
 }
 
-void print_root_directory() {
-  FILE * fs;
+void print_root_directory(struct fat16_filesystem * fs) {
   struct fat16_directory_entry entry;
   char filename[FAT_FILENAME_LENGTH + 1];
   char extension[FAT_EXTENSION_LENGTH + 1];
@@ -29,15 +34,14 @@ void print_root_directory() {
   struct fat_time time_created, time_modified;
   int i;
 
-  fs = fopen(FS_PATH, "r");
   /* TODO: delete FAT_ROOT_OFFSET, seek reserved_sector_count * bytes_per_sector */
-  fseek(fs, FAT_ROOT_OFFSET, SEEK_SET);
+  fseek(fs->fd, FAT_ROOT_OFFSET, SEEK_SET);
 
   putchar('\n');
   printf("Root directory:\n");
   /* TODO: iterate max_root_entries times. */
   for (i = 0; i < 512; i++) {
-    fread(&entry, sizeof(entry), 1, fs);
+    fread(&entry, sizeof(entry), 1, fs->fd);
 
     /* skip empty entries */
     if (!*entry.name) continue;
@@ -76,13 +80,10 @@ void print_root_directory() {
     printf(" arch:%s", entry.attributes & 0x20 ? "yes" : "no");
     putchar('\n');
   }
-
-  fclose(fs);
 }
 
-void print_boot_sector() {
-  FILE * fs;
-  struct fat16_boot_sector bs;
+void print_boot_sector(struct fat16_filesystem * fs) {
+  struct fat16_boot_sector * bs;
   struct fat_preamble * pre;
   struct fat_bios_parameter_block * bp;
   struct fat16_extended_bios_parameter_block * ebp;
@@ -93,13 +94,10 @@ void print_boot_sector() {
   char label[FAT_LABEL_LENGTH + 1];
   char fs_type[FAT_FS_TYPE_LENGTH + 1];
 
-  fs = fopen(FS_PATH, "r");
-  fread(&bs, sizeof(bs), 1, fs);
-  fclose(fs);
-
-  pre = &bs.preamble;
-  bp = &bs.bios_params;
-  ebp = &bs.ext_bios_params;
+  bs = &fs->boot_sector;
+  pre = &bs->preamble;
+  bp = &bs->bios_params;
+  ebp = &bs->ext_bios_params;
 
   total_sectors = bp->total_sectors == 0 ? (int)bp->total_sectors_large : (int)bp->total_sectors;
 
