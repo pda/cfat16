@@ -59,8 +59,7 @@ void print_root_directory() {
       printf("  %s.%s\n", filename, extension);
     }
 
-    printf("    bytes: %d\n", entry.size);
-    printf("    cluster: %d\n", entry.start_cluster);
+    printf("    bytes: %u  cluster: %u\n", entry.size, entry.start_cluster);
     printf("    created: %4u-%02u-%02u %02u:%02u:%02u\n",
         date_created.year, date_created.month, date_created.day,
         time_created.hour, time_created.minute, time_created.second);
