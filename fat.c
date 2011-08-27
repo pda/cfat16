@@ -24,15 +24,19 @@ void print_root_directory() {
   int i;
 
   fs = fopen(FS_PATH, "r");
-  // TODO: delete FAT_ROOT_OFFSET, seek reserved_sector_count * bytes_per_sector
+  /* TODO: delete FAT_ROOT_OFFSET, seek reserved_sector_count * bytes_per_sector */
   fseek(fs, FAT_ROOT_OFFSET, SEEK_SET);
 
   putchar('\n');
   printf("Root directory:\n");
-  // TODO: iterate max_root_entries times.
+  /* TODO: iterate max_root_entries times. */
   for (i = 0; i < 512; i++) {
     fread(&entry, sizeof(entry), 1, fs);
-    if (!*entry.name) continue; // skip empty entries
+
+    /* skip empty entries */
+    if (!*entry.name) continue;
+
+    /* null terminate strings */
     fat_string_copy(filename, entry.name, FAT_FILENAME_LENGTH);
     fat_string_copy(extension, entry.extension, FAT_EXTENSION_LENGTH);
     created_year = ((entry.create_date >> 9) & 0x7F) + 1980;
@@ -65,7 +69,7 @@ void print_boot_sector() {
   struct fat_bios_parameter_block * bp;
   struct fat16_extended_bios_parameter_block * ebp;
 
-  // presentation variables
+  /* presentation variables */
   int total_sectors;
   char oem_name[FAT_OEM_NAME_LENGTH + 1];
   char label[FAT_LABEL_LENGTH + 1];
@@ -81,7 +85,7 @@ void print_boot_sector() {
 
   total_sectors = bp->total_sectors == 0 ? (int)bp->total_sectors_large : (int)bp->total_sectors;
 
-  // null terminate strings
+  /* null terminate strings */
   fat_string_copy(oem_name, pre->oem_name, FAT_OEM_NAME_LENGTH);
   fat_string_copy(label, ebp->label, FAT_LABEL_LENGTH);
   fat_string_copy(fs_type, ebp->fs_type, FAT_FS_TYPE_LENGTH);
