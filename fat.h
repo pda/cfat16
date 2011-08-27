@@ -7,6 +7,8 @@
 #define FAT_FILENAME_LENGTH 8
 #define FAT_EXTENSION_LENGTH 3
 
+#define FAT_ROOT_OFFSET 0x8800
+
 #pragma pack(push)
 #pragma pack(1)
 
@@ -65,6 +67,7 @@ struct fat16_directory_entry {
 
 #pragma pack(pop)
 
+void print_root_directory();
 void print_boot_sector();
 
 void fat_string_copy(char * output, char * input, int length);

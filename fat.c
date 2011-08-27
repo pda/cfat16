@@ -8,7 +8,54 @@
 
 int main() {
   print_boot_sector();
+  print_root_directory();
+  putchar('\n');
   return EXIT_SUCCESS;
+}
+
+void print_root_directory() {
+  FILE * fs;
+  struct fat16_directory_entry entry;
+  char filename[FAT_FILENAME_LENGTH + 1];
+  char extension[FAT_EXTENSION_LENGTH + 1];
+  int created_year;
+  int created_month;
+  int created_day;
+  int i;
+
+  fs = fopen(FS_PATH, "r");
+  // TODO: delete FAT_ROOT_OFFSET, seek reserved_sector_count * bytes_per_sector
+  fseek(fs, FAT_ROOT_OFFSET, SEEK_SET);
+
+  putchar('\n');
+  printf("Root directory:\n");
+  // TODO: iterate max_root_entries times.
+  for (i = 0; i < 512; i++) {
+    fread(&entry, sizeof(entry), 1, fs);
+    if (!*entry.name) continue; // skip empty entries
+    fat_string_copy(filename, entry.name, FAT_FILENAME_LENGTH);
+    fat_string_copy(extension, entry.extension, FAT_EXTENSION_LENGTH);
+    created_year = ((entry.create_date >> 9) & 0x7F) + 1980;
+    created_month = (entry.create_date >> 5) & 0x0F;
+    created_day = entry.create_date & 0x1F;
+    if (entry.attributes & 0x08) {
+      printf("  (Volume label: %s%s)\n", filename, extension);
+    } else {
+      printf("  %s.%s\n", filename, extension);
+    }
+    printf("    bytes: %d\n", entry.size);
+    printf("    cluster: %d\n", entry.start_cluster);
+    printf("    created: %4d-%02d-%02d\n", created_year, created_month, created_day);
+    printf("   ");
+    printf(" ro:%s", entry.attributes & 0x01 ? "yes" : "no");
+    printf(" hide:%s", entry.attributes & 0x02 ? "yes" : "no");
+    printf(" sys:%s", entry.attributes & 0x03 ? "yes" : "no");
+    printf(" dir:%s", entry.attributes & 0x10 ? "yes" : "no");
+    printf(" arch:%s", entry.attributes & 0x20 ? "yes" : "no");
+    putchar('\n');
+  }
+
+  fclose(fs);
 }
 
 void print_boot_sector() {
@@ -66,7 +113,6 @@ void print_boot_sector() {
   printf("  FAT type: %s\n", fs_type);
   printf("  OS boot code: %d bytes\n", (int)sizeof(ebp->os_boot_code));
   printf("  Boot sector signature: 0x%04X\n", ebp->boot_sector_signature);
-  putchar('\n');
 }
 
 void fat_string_copy(char * output, char * input, int length) {
