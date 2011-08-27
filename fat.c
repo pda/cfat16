@@ -2,6 +2,8 @@
 #include <stdio.h>
 #include <string.h>
 
+#include "time.h"
+
 #include "fat.h"
 
 #define FS_PATH "sample.fat16"
@@ -18,9 +20,8 @@ void print_root_directory() {
   struct fat16_directory_entry entry;
   char filename[FAT_FILENAME_LENGTH + 1];
   char extension[FAT_EXTENSION_LENGTH + 1];
-  int created_year;
-  int created_month;
-  int created_day;
+  struct fat_date date_created, date_modified, date_accessed;
+  struct fat_time time_created, time_modified;
   int i;
 
   fs = fopen(FS_PATH, "r");
@@ -39,17 +40,25 @@ void print_root_directory() {
     /* null terminate strings */
     fat_string_copy(filename, entry.name, FAT_FILENAME_LENGTH);
     fat_string_copy(extension, entry.extension, FAT_EXTENSION_LENGTH);
-    created_year = ((entry.create_date >> 9) & 0x7F) + 1980;
-    created_month = (entry.create_date >> 5) & 0x0F;
-    created_day = entry.create_date & 0x1F;
+
+    /* read dates and times from bitfields */
+    fat_read_date(&date_created, entry.create_date);
+    fat_read_date(&date_modified, entry.modify_date);
+    fat_read_date(&date_accessed, entry.access_date);
+    fat_read_time(&time_created, entry.create_time);
+    fat_read_time(&time_modified, entry.modify_time);
+
     if (entry.attributes & 0x08) {
       printf("  (Volume label: %s%s)\n", filename, extension);
     } else {
       printf("  %s.%s\n", filename, extension);
     }
+
     printf("    bytes: %d\n", entry.size);
     printf("    cluster: %d\n", entry.start_cluster);
-    printf("    created: %4d-%02d-%02d\n", created_year, created_month, created_day);
+    printf("    created: %4u-%02u-%02u %02u:%02u:%02u\n",
+        date_created.year, date_created.month, date_created.day,
+        time_created.hour, time_created.minute, time_created.second);
     printf("   ");
     printf(" ro:%s", entry.attributes & 0x01 ? "yes" : "no");
     printf(" hide:%s", entry.attributes & 0x02 ? "yes" : "no");
