@@ -60,9 +60,14 @@ void print_root_directory() {
     }
 
     printf("    bytes: %u  cluster: %u\n", entry.size, entry.start_cluster);
-    printf("    created: %4u-%02u-%02u %02u:%02u:%02u\n",
+    printf("    created:  %4u-%02u-%02u %02u:%02u:%02u\n",
         date_created.year, date_created.month, date_created.day,
         time_created.hour, time_created.minute, time_created.second);
+    printf("    modified: %4u-%02u-%02u %02u:%02u:%02u\n",
+        date_modified.year, date_modified.month, date_modified.day,
+        time_modified.hour, time_modified.minute, time_modified.second);
+    printf("    accessed: %4u-%02u-%02u\n",
+        date_accessed.year, date_accessed.month, date_accessed.day);
     printf("   ");
     printf(" ro:%s", entry.attributes & 0x01 ? "yes" : "no");
     printf(" hide:%s", entry.attributes & 0x02 ? "yes" : "no");
