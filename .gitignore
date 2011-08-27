@@ -1,0 +1,5 @@
+# compiled executable
+/read_fat
+
+# compiled objects
+*.o
