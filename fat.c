@@ -3,6 +3,7 @@
 #include <string.h>
 
 #include "time.h"
+#include "dir.h"
 
 #include "fat.h"
 
