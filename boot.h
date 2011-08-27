@@ -49,7 +49,3 @@ struct fat16_boot_sector {
 
 #pragma pack(pop)
 
-void print_root_directory();
-void print_boot_sector();
-
-void fat_string_copy(char * output, char * input, int length);

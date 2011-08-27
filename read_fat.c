@@ -1,14 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <string.h>
 
+#include "boot.h"
 #include "time.h"
 #include "dir.h"
-
-#include "fat.h"
+#include "utils.h"
 
 #define FS_PATH "sample.fat16"
 
+/* header */
+void print_root_directory();
+void print_boot_sector();
+
+/* implementation */
 int main() {
   print_boot_sector();
   print_root_directory();
@@ -127,9 +131,4 @@ void print_boot_sector() {
   printf("  FAT type: %s\n", fs_type);
   printf("  OS boot code: %d bytes\n", (int)sizeof(ebp->os_boot_code));
   printf("  Boot sector signature: 0x%04X\n", ebp->boot_sector_signature);
-}
-
-void fat_string_copy(char * output, char * input, int length) {
-  memset(output, '\0', length + 1);
-  strncpy(output, input, length);
 }
