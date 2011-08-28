@@ -5,8 +5,6 @@
 #define FAT_FS_TYPE_LENGTH 8
 #define FAT_OS_BOOT_CODE_LENGTH 448
 
-#define FAT_ROOT_OFFSET 0x8800
-
 #pragma pack(push)
 #pragma pack(1)
 

@@ -34,13 +34,11 @@ void print_root_directory(struct fat16_filesystem * fs) {
   struct fat_time time_created, time_modified;
   int i;
 
-  /* TODO: delete FAT_ROOT_OFFSET, seek reserved_sector_count * bytes_per_sector */
-  fseek(fs->fd, FAT_ROOT_OFFSET, SEEK_SET);
+  fat_seek_to_root_directory(fs);
 
   putchar('\n');
   printf("Root directory:\n");
-  /* TODO: iterate max_root_entries times. */
-  for (i = 0; i < 512; i++) {
+  for (i = 0; i < fs->root_dir_entries; i++) {
     fread(&entry, sizeof(entry), 1, fs->fd);
 
     /* skip empty entries */
