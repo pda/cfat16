@@ -44,6 +44,9 @@ void print_root_directory(struct fat16_filesystem * fs) {
     /* skip empty entries */
     if (!*entry.name) continue;
 
+    /* skip volume label */
+    if (entry.attributes & 0x08) continue;
+
     /* null terminate strings */
     fat_string_copy(filename, entry.name, FAT_FILENAME_LENGTH);
     fat_string_copy(extension, entry.extension, FAT_EXTENSION_LENGTH);
@@ -55,12 +58,7 @@ void print_root_directory(struct fat16_filesystem * fs) {
     fat_read_time(&time_created, entry.create_time);
     fat_read_time(&time_modified, entry.modify_time);
 
-    if (entry.attributes & 0x08) {
-      printf("  (Volume label: %s%s)\n", filename, extension);
-    } else {
-      printf("  %s.%s\n", filename, extension);
-    }
-
+    printf("  %s.%s\n", filename, extension);
     printf("    bytes: %u  cluster: %u\n", entry.size, entry.start_cluster);
     printf("    created:  %4u-%02u-%02u %02u:%02u:%02u\n",
         date_created.year, date_created.month, date_created.day,
