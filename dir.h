@@ -23,3 +23,5 @@ struct fat16_directory_entry {
 };
 
 #pragma pack(pop)
+
+void fat_read_filename(char * output, struct fat16_directory_entry *);

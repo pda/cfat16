@@ -28,8 +28,7 @@ int main() {
 
 void print_root_directory(struct fat16_filesystem * fs) {
   struct fat16_directory_entry entry;
-  char filename[FAT_FILENAME_LENGTH + 1];
-  char extension[FAT_EXTENSION_LENGTH + 1];
+  char filename[13]; /* "FILENAME.EXT\0" */
   struct fat_date date_created, date_modified, date_accessed;
   struct fat_time time_created, time_modified;
   int i;
@@ -47,9 +46,8 @@ void print_root_directory(struct fat16_filesystem * fs) {
     /* skip volume label */
     if (entry.attributes & 0x08) continue;
 
-    /* null terminate strings */
-    fat_string_copy(filename, entry.name, FAT_FILENAME_LENGTH);
-    fat_string_copy(extension, entry.extension, FAT_EXTENSION_LENGTH);
+    /* read filename */
+    fat_read_filename(filename, &entry);
 
     /* read dates and times from bitfields */
     fat_read_date(&date_created, entry.create_date);
@@ -58,7 +56,7 @@ void print_root_directory(struct fat16_filesystem * fs) {
     fat_read_time(&time_created, entry.create_time);
     fat_read_time(&time_modified, entry.modify_time);
 
-    printf("  %s.%s\n", filename, extension);
+    printf("  %s\n", filename);
     printf("    bytes: %u  cluster: %u\n", entry.size, entry.start_cluster);
     printf("    created:  %4u-%02u-%02u %02u:%02u:%02u\n",
         date_created.year, date_created.month, date_created.day,
