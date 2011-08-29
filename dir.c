@@ -28,3 +28,8 @@ void fat_read_filename(char * output, struct fat16_directory_entry * de) {
     strcpy(p, extension);
   }
 }
+
+int fat_directory_entry_exists(struct fat16_directory_entry * de) {
+  /* 0x00: null entry, 0xE5: marked as deleted */
+  return !(*de->name == 0x00 || *de->name == 0xE5);
+}

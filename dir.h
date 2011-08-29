@@ -7,8 +7,8 @@
 #pragma pack(1)
 
 struct fat16_directory_entry {
-  char name[FAT_FILENAME_LENGTH]; /* e.g. "README  " */
-  char extension[FAT_EXTENSION_LENGTH]; /* e.g. "TXT" */
+  unsigned char name[FAT_FILENAME_LENGTH]; /* e.g. "README  " */
+  unsigned char extension[FAT_EXTENSION_LENGTH]; /* e.g. "TXT" */
   unsigned char attributes; /* File Attributes bitfield: ro,hide,sys,label,subdir,arch,dev,unused */
   unsigned char nt_case; /* NT uses two bits to encode case information */
   uint8_t create_time_fine; /* 10ms units, 0 ~ 199 */
@@ -25,3 +25,4 @@ struct fat16_directory_entry {
 #pragma pack(pop)
 
 void fat_read_filename(char * output, struct fat16_directory_entry *);
+int fat_directory_entry_exists(struct fat16_directory_entry *);
