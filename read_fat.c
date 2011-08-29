@@ -10,8 +10,8 @@
 
 /* header */
 void print_boot_sector(struct fat16_filesystem *);
-void print_root_directory(struct fat16_filesystem *);
-void print_directory_entry(struct fat16_filesystem *, struct fat_dir_entry *);
+void print_root_dir(struct fat16_filesystem *);
+void print_dir_entry(struct fat16_filesystem *, struct fat_dir_entry *);
 
 /* implementation */
 int main() {
@@ -19,7 +19,7 @@ int main() {
   fat_open_filesystem(&fs, FS_PATH);
 
   print_boot_sector(&fs);
-  print_root_directory(&fs);
+  print_root_dir(&fs);
   putchar('\n');
 
   fat_close_filesystem(&fs);
@@ -27,11 +27,11 @@ int main() {
   return EXIT_SUCCESS;
 }
 
-void print_root_directory(struct fat16_filesystem * fs) {
+void print_root_dir(struct fat16_filesystem * fs) {
   struct fat_dir_entry entry;
   int i;
 
-  fat_seek_to_root_directory(fs);
+  fat_seek_to_root_dir(fs);
 
   putchar('\n');
   printf("Root directory:\n");
@@ -39,16 +39,16 @@ void print_root_directory(struct fat16_filesystem * fs) {
     fread(&entry, sizeof(entry), 1, fs->fd);
 
     /* skip empty/unused entries */
-    if (!fat_directory_entry_exists(&entry)) continue;
+    if (!fat_dir_entry_exists(&entry)) continue;
 
     /* skip volume label */
     if (fat_is_volume_label(&entry)) continue;
 
-    print_directory_entry(fs, &entry);
+    print_dir_entry(fs, &entry);
   }
 }
 
-void print_directory_entry(struct fat16_filesystem * fs, struct fat_dir_entry * de) {
+void print_dir_entry(struct fat16_filesystem * fs, struct fat_dir_entry * de) {
   char filename[13]; /* "FILENAME.EXT\0" */
   struct fat_date date_created, date_modified, date_accessed;
   struct fat_time time_created, time_modified;
@@ -83,7 +83,7 @@ void print_directory_entry(struct fat16_filesystem * fs, struct fat_dir_entry * 
   putchar('\n');
 
   if (fat_is_file(de)) {
-    file_content = fat_read_file_from_directory_entry(fs, de);
+    file_content = fat_read_file_from_dir_entry(fs, de);
     printf("    Content:\n%s    <EOF>\n", file_content);
     free(file_content);
   }

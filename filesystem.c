@@ -30,7 +30,7 @@ void fat_close_filesystem(struct fat16_filesystem * fs) {
   if (fclose(fs->fd) != 0) fatal_error("unable to close filesystem");
 }
 
-int fat_seek_to_root_directory(struct fat16_filesystem * fs) {
+int fat_seek_to_root_dir(struct fat16_filesystem * fs) {
   return fseek(fs->fd, fs->root_dir_offset, SEEK_SET);
 }
 
@@ -40,7 +40,7 @@ int fat_seek_to_cluster(struct fat16_filesystem * fs, int cluster) {
   return fseek(fs->fd, offset, SEEK_SET);
 }
 
-char * fat_read_file_from_directory_entry(struct fat16_filesystem * fs, struct fat_dir_entry * de) {
+char * fat_read_file_from_dir_entry(struct fat16_filesystem * fs, struct fat_dir_entry * de) {
   char * buffer;
 
   if (de->size > fs->cluster_size)

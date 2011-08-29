@@ -29,7 +29,7 @@ void fat_read_filename(char * output, struct fat_dir_entry * de) {
   }
 }
 
-int fat_directory_entry_exists(struct fat_dir_entry * de) {
+int fat_dir_entry_exists(struct fat_dir_entry * de) {
   /* 0x00: null entry, 0xE5: marked as deleted */
   return !(*de->name == 0x00 || *de->name == 0xE5);
 }

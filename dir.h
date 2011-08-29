@@ -26,7 +26,7 @@ struct fat_dir_entry {
 #pragma pack(pop)
 
 void fat_read_filename(char * output, struct fat_dir_entry *);
-int fat_directory_entry_exists(struct fat_dir_entry *);
+int fat_dir_entry_exists(struct fat_dir_entry *);
 int fat_is_volume_label(struct fat_dir_entry *);
 int fat_is_file(struct fat_dir_entry *);
 int fat_is_dir(struct fat_dir_entry *);
