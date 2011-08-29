@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 
 #define FAT_FILENAME_LENGTH 8

@@ -1,3 +1,4 @@
+#pragma once
 #include <stdint.h>
 
 #define FAT_OEM_NAME_LENGTH 8
