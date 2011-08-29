@@ -87,6 +87,7 @@ void print_boot_sector(struct fat16_filesystem * fs) {
   struct fat_preamble * pre;
   struct fat_bios_parameter_block * bp;
   struct fat16_extended_bios_parameter_block * ebp;
+  int fat_i;
 
   /* presentation variables */
   int total_sectors;
@@ -133,4 +134,13 @@ void print_boot_sector(struct fat16_filesystem * fs) {
   printf("  FAT type: %s\n", fs_type);
   printf("  OS boot code: %d bytes\n", (int)sizeof(ebp->os_boot_code));
   printf("  Boot sector signature: 0x%04X\n", ebp->boot_sector_signature);
+  putchar('\n');
+  printf("Calculated parameters:\n");
+  printf("  FAT size: %u bytes\n", fs->fat_size);
+  for (fat_i = 0; fat_i < bp->fat_count; fat_i++)
+    printf("  FAT #%u offset: 0x%08X \n", fat_i + 1, fs->fat_offset + fs->fat_size * fat_i);
+  printf("  Root directory offset: 0x%08X\n", fs->root_dir_offset);
+  printf("  Root directory size: %u bytes\n", fs->root_dir_size);
+  printf("  Data offset: 0x%08X\n", fs->data_offset);
+  printf("  Cluster size: %u bytes\n", fs->cluster_size);
 }
