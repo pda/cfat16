@@ -11,9 +11,11 @@ struct fat16_filesystem {
   int root_dir_size;
   int root_dir_entries;
   int data_offset;
+  int cluster_size;
 };
 
 void fat_open_filesystem(struct fat16_filesystem *, char * path);
 void fat_close_filesystem(struct fat16_filesystem *);
 
 int fat_seek_to_root_directory(struct fat16_filesystem *);
+int fat_seek_to_cluster(struct fat16_filesystem *, int cluster);

@@ -21,6 +21,7 @@ void fat_open_filesystem(struct fat16_filesystem * fs, char * path) {
   fs->root_dir_size = bp->max_root_entries * sizeof(struct fat16_directory_entry);
   fs->root_dir_entries = bp->max_root_entries;
   fs->data_offset = fs->root_dir_offset + fs->root_dir_size;
+  fs->cluster_size = bp->bytes_per_sector * bp->sectors_per_cluster;
 }
 
 void fat_close_filesystem(struct fat16_filesystem * fs) {
@@ -29,4 +30,10 @@ void fat_close_filesystem(struct fat16_filesystem * fs) {
 
 int fat_seek_to_root_directory(struct fat16_filesystem * fs) {
   return fseek(fs->fd, fs->root_dir_offset, SEEK_SET);
+}
+
+int fat_seek_to_cluster(struct fat16_filesystem * fs, int cluster) {
+  /* first cluster is #2 at position 0 */
+  int offset = fs->data_offset + (cluster - 2) * fs->cluster_size;
+  return fseek(fs->fd, offset, SEEK_SET);
 }
