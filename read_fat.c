@@ -9,8 +9,9 @@
 #define FS_PATH "sample.fat16"
 
 /* header */
-void print_root_directory(struct fat16_filesystem *);
 void print_boot_sector(struct fat16_filesystem *);
+void print_root_directory(struct fat16_filesystem *);
+void print_directory_entry(struct fat16_directory_entry *);
 
 /* implementation */
 int main() {
@@ -28,9 +29,6 @@ int main() {
 
 void print_root_directory(struct fat16_filesystem * fs) {
   struct fat16_directory_entry entry;
-  char filename[13]; /* "FILENAME.EXT\0" */
-  struct fat_date date_created, date_modified, date_accessed;
-  struct fat_time time_created, time_modified;
   int i;
 
   fat_seek_to_root_directory(fs);
@@ -46,34 +44,42 @@ void print_root_directory(struct fat16_filesystem * fs) {
     /* skip volume label */
     if (fat_is_volume_label(&entry)) continue;
 
-    /* read filename */
-    fat_read_filename(filename, &entry);
-
-    /* read dates and times from bitfields */
-    fat_read_date(&date_created, entry.create_date);
-    fat_read_date(&date_modified, entry.modify_date);
-    fat_read_date(&date_accessed, entry.access_date);
-    fat_read_time(&time_created, entry.create_time);
-    fat_read_time(&time_modified, entry.modify_time);
-
-    printf("  %s\n", filename);
-    printf("    bytes: %u  cluster: %u\n", entry.size, entry.start_cluster);
-    printf("    created:  %4u-%02u-%02u %02u:%02u:%02u\n",
-        date_created.year, date_created.month, date_created.day,
-        time_created.hour, time_created.minute, time_created.second);
-    printf("    modified: %4u-%02u-%02u %02u:%02u:%02u\n",
-        date_modified.year, date_modified.month, date_modified.day,
-        time_modified.hour, time_modified.minute, time_modified.second);
-    printf("    accessed: %4u-%02u-%02u\n",
-        date_accessed.year, date_accessed.month, date_accessed.day);
-    printf("   ");
-    printf(" ro:%s", entry.attributes & 0x01 ? "yes" : "no");
-    printf(" hide:%s", entry.attributes & 0x02 ? "yes" : "no");
-    printf(" sys:%s", entry.attributes & 0x03 ? "yes" : "no");
-    printf(" dir:%s", entry.attributes & 0x10 ? "yes" : "no");
-    printf(" arch:%s", entry.attributes & 0x20 ? "yes" : "no");
-    putchar('\n');
+    print_directory_entry(&entry);
   }
+}
+
+void print_directory_entry(struct fat16_directory_entry * de) {
+  char filename[13]; /* "FILENAME.EXT\0" */
+  struct fat_date date_created, date_modified, date_accessed;
+  struct fat_time time_created, time_modified;
+
+  /* read filename */
+  fat_read_filename(filename, de);
+
+  /* read dates and times from bitfields */
+  fat_read_date(&date_created, de->create_date);
+  fat_read_date(&date_modified, de->modify_date);
+  fat_read_date(&date_accessed, de->access_date);
+  fat_read_time(&time_created, de->create_time);
+  fat_read_time(&time_modified, de->modify_time);
+
+  printf("  %s\n", filename);
+  printf("    bytes: %u  cluster: %u\n", de->size, de->start_cluster);
+  printf("    created:  %4u-%02u-%02u %02u:%02u:%02u\n",
+      date_created.year, date_created.month, date_created.day,
+      time_created.hour, time_created.minute, time_created.second);
+  printf("    modified: %4u-%02u-%02u %02u:%02u:%02u\n",
+      date_modified.year, date_modified.month, date_modified.day,
+      time_modified.hour, time_modified.minute, time_modified.second);
+  printf("    accessed: %4u-%02u-%02u\n",
+      date_accessed.year, date_accessed.month, date_accessed.day);
+  printf("   ");
+  printf(" ro:%s", de->attributes & 0x01 ? "yes" : "no");
+  printf(" hide:%s", de->attributes & 0x02 ? "yes" : "no");
+  printf(" sys:%s", de->attributes & 0x03 ? "yes" : "no");
+  printf(" dir:%s", de->attributes & 0x10 ? "yes" : "no");
+  printf(" arch:%s", de->attributes & 0x20 ? "yes" : "no");
+  putchar('\n');
 }
 
 void print_boot_sector(struct fat16_filesystem * fs) {
