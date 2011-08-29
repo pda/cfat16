@@ -11,7 +11,7 @@
 /* header */
 void print_boot_sector(struct fat16_filesystem *);
 void print_root_directory(struct fat16_filesystem *);
-void print_directory_entry(struct fat16_directory_entry *);
+void print_directory_entry(struct fat16_filesystem *, struct fat16_directory_entry *);
 
 /* implementation */
 int main() {
@@ -44,14 +44,15 @@ void print_root_directory(struct fat16_filesystem * fs) {
     /* skip volume label */
     if (fat_is_volume_label(&entry)) continue;
 
-    print_directory_entry(&entry);
+    print_directory_entry(fs, &entry);
   }
 }
 
-void print_directory_entry(struct fat16_directory_entry * de) {
+void print_directory_entry(struct fat16_filesystem * fs, struct fat16_directory_entry * de) {
   char filename[13]; /* "FILENAME.EXT\0" */
   struct fat_date date_created, date_modified, date_accessed;
   struct fat_time time_created, time_modified;
+  char * file_content;
 
   /* read filename */
   fat_read_filename(filename, de);
@@ -80,6 +81,12 @@ void print_directory_entry(struct fat16_directory_entry * de) {
   printf(" dir:%s", de->attributes & 0x10 ? "yes" : "no");
   printf(" arch:%s", de->attributes & 0x20 ? "yes" : "no");
   putchar('\n');
+
+  if (fat_is_file(de)) {
+    file_content = fat_read_file_from_directory_entry(fs, de);
+    printf("    Content:\n%s    <EOF>\n", file_content);
+    free(file_content);
+  }
 }
 
 void print_boot_sector(struct fat16_filesystem * fs) {
