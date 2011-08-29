@@ -2,6 +2,7 @@
 #include <stdio.h>
 
 #include "boot.h"
+#include "dir.h"
 
 struct fat16_filesystem {
   FILE * fd;
@@ -20,3 +21,5 @@ void fat_close_filesystem(struct fat16_filesystem *);
 
 int fat_seek_to_root_directory(struct fat16_filesystem *);
 int fat_seek_to_cluster(struct fat16_filesystem *, int cluster);
+
+char * fat_read_file_from_directory_entry(struct fat16_filesystem *, struct fat16_directory_entry *);

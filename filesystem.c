@@ -1,3 +1,5 @@
+#include <stdlib.h>
+
 #include "filesystem.h"
 #include "dir.h"
 #include "utils.h"
@@ -36,4 +38,20 @@ int fat_seek_to_cluster(struct fat16_filesystem * fs, int cluster) {
   /* first cluster is #2 at position 0 */
   int offset = fs->data_offset + (cluster - 2) * fs->cluster_size;
   return fseek(fs->fd, offset, SEEK_SET);
+}
+
+char * fat_read_file_from_directory_entry(struct fat16_filesystem * fs, struct fat16_directory_entry * de) {
+  char * buffer;
+
+  if (de->size > fs->cluster_size)
+    fatal_error("TODO: read multi-cluster files");
+
+  buffer = (char *)malloc(de->size + 1);
+  if (buffer == 0) fatal_error("malloc failed");
+
+  fat_seek_to_cluster(fs, de->start_cluster);
+  fread(buffer, de->size, 1, fs->fd);
+  buffer[de->size] = 0;
+
+  return buffer;
 }
