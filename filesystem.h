@@ -22,4 +22,4 @@ void fat_close_filesystem(struct fat16_filesystem *);
 int fat_seek_to_root_directory(struct fat16_filesystem *);
 int fat_seek_to_cluster(struct fat16_filesystem *, int cluster);
 
-char * fat_read_file_from_directory_entry(struct fat16_filesystem *, struct fat16_directory_entry *);
+char * fat_read_file_from_directory_entry(struct fat16_filesystem *, struct fat_dir_entry *);

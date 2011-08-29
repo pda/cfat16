@@ -11,7 +11,7 @@
 /* header */
 void print_boot_sector(struct fat16_filesystem *);
 void print_root_directory(struct fat16_filesystem *);
-void print_directory_entry(struct fat16_filesystem *, struct fat16_directory_entry *);
+void print_directory_entry(struct fat16_filesystem *, struct fat_dir_entry *);
 
 /* implementation */
 int main() {
@@ -28,7 +28,7 @@ int main() {
 }
 
 void print_root_directory(struct fat16_filesystem * fs) {
-  struct fat16_directory_entry entry;
+  struct fat_dir_entry entry;
   int i;
 
   fat_seek_to_root_directory(fs);
@@ -48,7 +48,7 @@ void print_root_directory(struct fat16_filesystem * fs) {
   }
 }
 
-void print_directory_entry(struct fat16_filesystem * fs, struct fat16_directory_entry * de) {
+void print_directory_entry(struct fat16_filesystem * fs, struct fat_dir_entry * de) {
   char filename[13]; /* "FILENAME.EXT\0" */
   struct fat_date date_created, date_modified, date_accessed;
   struct fat_time time_created, time_modified;

@@ -7,7 +7,7 @@
 #pragma pack(push)
 #pragma pack(1)
 
-struct fat16_directory_entry {
+struct fat_dir_entry {
   unsigned char name[FAT_FILENAME_LENGTH]; /* e.g. "README  " */
   unsigned char extension[FAT_EXTENSION_LENGTH]; /* e.g. "TXT" */
   unsigned char attributes; /* File Attributes bitfield: ro,hide,sys,label,subdir,arch,dev,unused */
@@ -25,8 +25,8 @@ struct fat16_directory_entry {
 
 #pragma pack(pop)
 
-void fat_read_filename(char * output, struct fat16_directory_entry *);
-int fat_directory_entry_exists(struct fat16_directory_entry *);
-int fat_is_volume_label(struct fat16_directory_entry *);
-int fat_is_file(struct fat16_directory_entry *);
-int fat_is_dir(struct fat16_directory_entry *);
+void fat_read_filename(char * output, struct fat_dir_entry *);
+int fat_directory_entry_exists(struct fat_dir_entry *);
+int fat_is_volume_label(struct fat_dir_entry *);
+int fat_is_file(struct fat_dir_entry *);
+int fat_is_dir(struct fat_dir_entry *);
