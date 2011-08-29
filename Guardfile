@@ -3,5 +3,5 @@
 
 guard :shell do
   watch("Makefile") { `make clean` }
-  watch(%r{\.[ch]}) { `make && ./read_fat` }
+  watch(%r{\.[ch]}) { `(make && ./read_fat); date` }
 end
