@@ -40,11 +40,11 @@ void print_root_directory(struct fat16_filesystem * fs) {
   for (i = 0; i < fs->root_dir_entries; i++) {
     fread(&entry, sizeof(entry), 1, fs->fd);
 
-    /* skip empty entries */
-    if (!*entry.name) continue;
+    /* skip empty/unused entries */
+    if (!fat_directory_entry_exists(&entry)) continue;
 
     /* skip volume label */
-    if (entry.attributes & 0x08) continue;
+    if (fat_is_volume_label(&entry)) continue;
 
     /* read filename */
     fat_read_filename(filename, &entry);
