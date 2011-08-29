@@ -26,3 +26,6 @@ struct fat16_directory_entry {
 
 void fat_read_filename(char * output, struct fat16_directory_entry *);
 int fat_directory_entry_exists(struct fat16_directory_entry *);
+int fat_is_volume_label(struct fat16_directory_entry *);
+int fat_is_file(struct fat16_directory_entry *);
+int fat_is_dir(struct fat16_directory_entry *);
