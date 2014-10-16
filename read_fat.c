@@ -6,17 +6,21 @@
 #include "dir.h"
 #include "utils.h"
 
-#define FS_PATH "sample.fat16"
-
 /* header */
 void print_boot_sector(struct fat16_filesystem *);
 void print_root_dir(struct fat16_filesystem *);
 void print_dir_entry(struct fat16_filesystem *, struct fat_dir_entry *);
 
 /* implementation */
-int main() {
+int main(int argc, char ** argv) {
+
+  if (argc != 2) {
+    fprintf(stderr, "argc %d, expected 2\n", argc);
+    exit(1);
+  }
+
   struct fat16_filesystem fs;
-  fat_open_filesystem(&fs, FS_PATH);
+  fat_open_filesystem(&fs, argv[1]);
 
   print_boot_sector(&fs);
   print_root_dir(&fs);
